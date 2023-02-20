@@ -22,13 +22,8 @@ export default function Home() {
         "Participante já está na lista!"
       );
     }
-    const data = participants ? [...participants, name] : [name];
-    setParticipants(data);
+    setParticipants((prevState) => [...prevState, name]);
     setName("");
-  };
-
-  const handleNameInputChange = (text: string) => {
-    setName(text);
   };
 
   const removeParticipant = (name: string) => {
@@ -58,7 +53,7 @@ export default function Home() {
           placeholder="Nome do participante"
           placeholderTextColor="#6B6B6B"
           value={name}
-          onChangeText={handleNameInputChange}
+          onChangeText={setName}
         />
         <TouchableOpacity style={styles.addBtn} onPress={handleAddParticipant}>
           <Text style={styles.btnText}>+</Text>
