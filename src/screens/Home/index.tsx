@@ -1,4 +1,11 @@
-import { Text, View, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  Alert,
+} from "react-native";
 import { styles } from "./styles";
 import { useState } from "react";
 
@@ -9,17 +16,36 @@ export default function Home() {
   const [name, setName] = useState("");
 
   const handleAddParticipant = () => {
+    if (participants.includes(name)) {
+      return Alert.alert(
+        "Participante Existente",
+        "Participante já está na lista!"
+      );
+    }
     const data = participants ? [...participants, name] : [name];
     setParticipants(data);
-    setName('')
+    setName("");
   };
 
   const handleNameInputChange = (text: string) => {
-    setName(text)
-  }
+    setName(text);
+  };
 
-  const removeParticipant = () => {
-    console.log("removeu");
+  const removeParticipant = (name: string) => {
+    Alert.alert("Remover participante", `Deseja remover ${name} da lista?`, [
+      {
+        text: "Sim",
+        onPress: () => {
+          const deleted = participants.filter((item) => item !== name);
+          setParticipants(deleted);
+          Alert.alert("Participante removido.");
+        },
+      },
+      {
+        text: "Não",
+        style: "cancel",
+      },
+    ]);
   };
 
   return (
@@ -38,11 +64,23 @@ export default function Home() {
           <Text style={styles.btnText}>+</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
-      {participants.map((item, index) => (
-      <Participant key={index} name={item} onRemove={removeParticipant} />
-      ))}
-      </ScrollView>
+      <FlatList
+        data={participants}
+        keyExtractor={(item) => item}
+        renderItem={({ item, index }) => (
+          <Participant
+            key={index}
+            name={item}
+            onRemove={() => removeParticipant(item)}
+          />
+        )}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <Text style={styles.empty}>
+            Ainda não há participantes cadastrados!
+          </Text>
+        )}
+      />
     </View>
   );
 }
